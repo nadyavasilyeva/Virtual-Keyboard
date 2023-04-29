@@ -1,0 +1,37 @@
+body {
+    background: linear-gradient(91deg, rgba(16,160,93,1) 0%, rgba(9,149,186,1) 100%);
+    font-style: normal;
+    font-family: roboto;
+}
+.container {
+    padding: 10px 10px;
+    align-items: center;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+h1 {
+    font-size: 30px;
+    font-weight: 500;
+    color: #fff;
+}
+
+p {
+    color: #fff;
+}
+
+.text_area {
+    outline: none;
+    font-size: 20px;
+    background-color: transparent;
+    background: rgba(91, 110, 110, 0.4);
+    color:#424242;
+    padding: 10px 10px;
+    border: 1px solid #9edce0;
+}
+
+.text_area:hover {
+    border: 2px solid #fff;
+    background: rgba(0, 0, 0, 0);
+}

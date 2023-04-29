@@ -1,0 +1,11 @@
+const container = document.createElement('div');
+const title = document.createElement('h1');
+const textarea = document.createElement('textarea');
+const keyboard = document.createElement('div');
+const about = document.createElement('p');
+title.textContent = 'RSS Виртуальная клавиатура';
+about.innerText = 'Клавиатура создана в операционной системе Windows\nДля переключения языка комбинация: Ctrl + Alt';
+container.classList.add('container');
+textarea.classList.add('text_area');
+container.append(title, textarea, keyboard, about);
+document.body.append(container);
