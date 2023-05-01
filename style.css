@@ -1,0 +1,113 @@
+body {
+    background: linear-gradient(91deg, rgba(16,160,93,1) 0%, rgba(9,149,186,1) 100%);
+    font-style: normal;
+    font-family: roboto;
+}
+.container {
+    padding: 10px 10px;
+    align-items: center;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+h1 {
+    font-size: 30px;
+    font-weight: 500;
+    color: #fff;
+}
+
+p {
+    color: #fff;
+}
+
+.text_area {
+    outline: none;
+    font-size: 20px;
+    background-color: transparent;
+    background: rgba(91, 110, 110, 0.4);
+    color:#424242;
+    word-break: break-all;
+    padding: 10px 10px;
+    border: 1px solid #9edce0;
+}
+
+.text_area:focus {
+    border: 2px solid #fff;
+    background: rgba(0, 0, 0, 0);
+}
+
+.keyboard {
+    padding: 40px 5px 5px 5px;
+    border-radius: 5px;
+    background-color: inherit;
+    display: grid;
+    grid-template-columns: repeat(15, 50px);
+    grid-auto-rows: 50px;
+    gap: 5px;
+    grid-template-areas:
+      ".. .. .. .. .. .. .. .. .. .. .. .. .. bs bs"
+      ".. .. .. .. .. .. .. .. .. .. .. .. .. .. .."
+      "ca ca .. .. .. .. .. .. .. .. .. .. .. en en"
+      "sl sl .. .. .. .. .. .. .. .. .. .. .. sr sr"
+      "cl .. .. sp sp sp sp sp sp sp .. .. .. .. ..";
+}
+  
+.key {
+    color: #fff;
+    background: transparent;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 5px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all .3s ease;
+}
+  
+.func {
+    background: transparent;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.key:hover {
+    background-color: rgba(192, 255, 229, 0.437);
+    box-shadow: -0.3em 0 .3em rgba(0, 0, 0, 0.238);
+}
+  
+.key.active {
+    background-color: rgba(192, 255, 229, 0.437);
+    box-shadow: none;
+}
+  
+.Backspace {
+    grid-area: bs;
+    text-align: left;
+    padding-left: 15px;
+}
+  
+.CapsLock {
+    grid-area: ca;
+}
+  
+.Enter {
+    grid-area: en;
+}
+  
+.ShiftLeft {
+    grid-area: sl;
+}
+  
+.ShiftRight {
+    grid-area: sr;
+}
+  
+.ControlLeft {
+    grid-area: cl
+}
+  
+.Space {
+    grid-area: sp;
+    background: transparent;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+  
