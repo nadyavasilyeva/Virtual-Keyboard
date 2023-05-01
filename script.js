@@ -1,16 +1,8 @@
-const container = document.createElement('div');
-const title = document.createElement('h1');
-const textarea = document.createElement('textarea');
-const keyboard = document.createElement('div');
-const about = document.createElement('p');
-title.textContent = 'RSS Виртуальная клавиатура';
-about.innerText = 'Клавиатура создана в операционной системе Windows\nДля переключения языка комбинация: Ctrl + Alt';
-container.classList.add('container');
-textarea.classList.add('text_area');
-container.append(title, textarea, keyboard, about);
-document.body.append(container);
 
-
+const symbol = 0;
+const letter = 1;
+const digit = 2;
+const func = 4;
 
 const keysLayout = [
     {
@@ -350,6 +342,12 @@ const keysLayout = [
       typeId: { en: func, ru: func },
     },
     {
+      code: 'Win',
+      char: { en: '⊞', ru: '⊞' },
+      shift: { en: '⊞', ru: '⊞' },
+      typeId: { en: func, ru: func },
+    },
+    {
       code: 'AltLeft',
       char: { en: 'alt', ru: 'alt' },
       shift: { en: 'alt', ru: 'alt' },
@@ -392,3 +390,165 @@ const keysLayout = [
       typeId: { en: func, ru: func },
     },
 ];
+
+class Keyboard {
+  constructor(keyboardElement, textareaElement) {
+    this.keyboard = keyboardElement;
+    this.keyboard.classList.add('keyboard');
+    this.textarea = textareaElement;
+    this.isKeyDownByMouse = false;
+    this.layout = localStorage.getItem('alex-m-lang') === 'ru' ? 'ru' : 'en';
+    this.keys = [];
+    this.isCapsLock = false;
+  }
+
+  init(keysLayoutArr) {
+    this.generate(keysLayoutArr);
+    this.setupEventHandlers();
+    console.log(keysLayoutArr);
+  }
+
+  generate(keysLayoutArr) {
+    keysLayoutArr.forEach((key) => {
+      const button = document.createElement('button');
+      if (key.typeId.en === func || key.code === 'Space') {
+        button.classList.add('key', 'func', key.code);
+      } else {
+        button.classList.add('key');
+      }
+
+      button.setAttribute('type', 'button');
+      button.setAttribute('id', key.code);
+      button.setAttribute('char-en', key.char.en);
+      button.setAttribute('char-ru', key.char.ru);
+      button.setAttribute('shift-en', key.shift.en);
+      button.setAttribute('shift-ru', key.shift.ru);
+      button.setAttribute('type-id-en', key.typeId.en);
+      button.setAttribute('type-id-ru', key.typeId.ru);
+      button.textContent = this.layout === 'en' ? key.char.en : key.char.ru;
+      this.keys.push(button);
+    });
+
+    this.keyboard.append(...this.keys);
+  }
+
+  shiftKeys(isCapsLock = false) {
+    this.keys.forEach((item) => {
+      const key = item;
+
+      ['en', 'ru'].forEach((lang) => {
+        if (!isCapsLock || +key.getAttribute(`type-id-${lang}`) === letter) {
+          const char = key.getAttribute(`char-${lang}`);
+          key.setAttribute(`char-${lang}`, key.getAttribute(`shift-${lang}`));
+          key.setAttribute(`shift-${lang}`, char);
+        }
+      });
+
+      key.innerText = key.getAttribute(`char-${this.layout}`);
+    });
+  }
+
+  deleteChar(backSpace = false) {
+    let { selectionStart } = this.textarea;
+    let { selectionEnd } = this.textarea;
+
+    if (selectionStart === selectionEnd) {
+      if (!backSpace) selectionEnd += 1;
+      else if (selectionStart > 0) selectionStart -= 1;
+    }
+    this.textarea.setRangeText('', selectionStart, selectionEnd, 'end');
+    this.textarea.scrollTop = this.textarea.scrollHeight;
+  }
+
+  insertChar(char) {
+    const { selectionStart } = this.textarea;
+    const { selectionEnd } = this.textarea;
+
+    this.textarea.setRangeText(char, selectionStart, selectionEnd, 'end');
+    this.textarea.scrollTop = this.textarea.scrollHeight;
+  }
+
+  keyDownEventHandler(event) {
+    const key = document.getElementById(event.code);
+
+    if (key) {
+      event.preventDefault();
+      let isShiftActive = document.getElementById('ShiftLeft').classList.contains('active');
+      isShiftActive = isShiftActive || document.getElementById('ShiftRight').classList.contains('active');
+      key.classList.add('active');
+      if ((event.code === 'ShiftLeft' || event.code === 'ShiftRight') && !event.repeat && !isShiftActive) this.shiftKeys();
+      else if (event.code === 'CapsLock' && !event.repeat) {
+        this.shiftKeys(true);
+        if (this.isCapsLock) key.classList.remove('active');
+        this.isCapsLock = !this.isCapsLock;
+      } else if (event.ctrlKey && event.altKey) {
+        this.layout = this.layout === 'en' ? 'ru' : 'en';
+        localStorage.setItem('alex-m-lang', this.layout);
+        this.keys.forEach((item) => {
+          const keyItem = item;
+          keyItem.innerText = keyItem.getAttribute(`char-${this.layout}`);
+        });
+      } else if (event.code === 'Delete') this.deleteChar();
+      else if (event.code === 'Backspace') this.deleteChar(true);
+      else if (event.code === 'Tab') this.insertChar('\t');
+      else if (event.code === 'Enter') this.insertChar('\n');
+      else if (+key.getAttribute('type-id-en') !== func) this.insertChar(key.textContent);
+    }
+  }
+
+  keyUpEventHandler(event) {
+    const key = document.getElementById(event.code);
+
+    if (key) {
+      if ((event.code === 'ShiftLeft' || event.code === 'ShiftRight') && key.classList.contains('active')) {
+        document.getElementById('ShiftLeft').classList.remove('active');
+        document.getElementById('ShiftRight').classList.remove('active');
+        this.shiftKeys();
+        return;
+      }
+      if (event.code !== 'CapsLock') key.classList.remove('active');
+    }
+  }
+
+  mouseDownEventHandler(event) {
+    const keyboardEvent = new KeyboardEvent('keydown', { code: event.target.id });
+
+    document.dispatchEvent(keyboardEvent);
+    this.isKeyDownByMouse = true;
+  }
+
+  mouseUpEventHandler(event) {
+    const keyboardEvent = new KeyboardEvent('keyup', { code: event.target.id });
+
+    document.dispatchEvent(keyboardEvent);
+    this.isKeyDownByMouse = false;
+  }
+
+  setupEventHandlers() {
+    document.addEventListener('keydown', (event) => this.keyDownEventHandler(event));
+    document.addEventListener('keyup', (event) => this.keyUpEventHandler(event));
+    document.addEventListener('mousedown', (event) => this.mouseDownEventHandler(event));
+    document.addEventListener('mouseup', (event) => this.mouseUpEventHandler(event));
+    document.addEventListener('mouseout', (event) => {
+      if (this.isKeyDownByMouse) this.mouseUpEventHandler(event);
+    });
+  }
+}
+
+
+const container = document.createElement('div');
+const title = document.createElement('h1');
+const textarea = document.createElement('textarea');
+const keyboard = document.createElement('div');
+const about = document.createElement('p');
+const keyboardObj = new Keyboard(keyboard, textarea);
+
+keyboardObj.init(keysLayout);
+title.textContent = 'RSS Виртуальная клавиатура';
+about.innerText = 'Клавиатура создана в операционной системе Windows\nДля переключения языка комбинация: Ctrl + Alt';
+container.classList.add('container');
+textarea.classList.add('text_area');
+container.append(title, textarea, keyboard, about);
+document.body.append(container);
+textarea.onblur = () => textarea.focus();
+textarea.focus();
