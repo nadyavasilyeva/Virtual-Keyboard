@@ -405,7 +405,6 @@ class Keyboard {
   init(keysLayoutArr) {
     this.generate(keysLayoutArr);
     this.setupEventHandlers();
-    console.log(keysLayoutArr);
   }
 
   generate(keysLayoutArr) {
@@ -516,7 +515,7 @@ class Keyboard {
     document.dispatchEvent(keyboardEvent);
     this.isKeyDownByMouse = true;
   }
-
+  
   mouseUpEventHandler(event) {
     const keyboardEvent = new KeyboardEvent('keyup', { code: event.target.id });
 
@@ -544,7 +543,7 @@ const about = document.createElement('p');
 const keyboardObj = new Keyboard(keyboard, textarea);
 
 keyboardObj.init(keysLayout);
-title.textContent = 'RSS Виртуальная клавиатура';
+title.textContent = 'RSS Virtual Keyboard';
 about.innerText = 'Клавиатура создана в операционной системе Windows\nДля переключения языка комбинация: Ctrl + Alt';
 container.classList.add('container');
 textarea.classList.add('text_area');
